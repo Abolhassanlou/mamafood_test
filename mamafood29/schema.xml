@@ -1,0 +1,282 @@
+<?xml version="1.0"?>
+<database name="Mamafood" defaultIdMethod="native">
+  
+    <!-- Roles Table -->
+    <table name="roles">
+        <column name="role_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="role_name" type="varchar" size="50" unique="true" required="true"/>
+    </table>
+
+    <!-- Addresses Table -->
+    <table name="addresses">
+        <column name="address_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="street" type="varchar" size="100"/>
+        <column name="flat_number" type="varchar" size="20"/>
+        <column name="door_number" type="varchar" size="20"/>
+        <column name="city" type="varchar" size="50"/>
+        <column name="state" type="varchar" size="50"/>
+        <column name="postal_code" type="varchar" size="20"/>
+        <column name="google_maps_link" type="varchar" size="255"/>
+    </table>
+
+    <!-- Users Table -->
+    <table name="users">
+        <column name="user_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="100"/>
+        <column name="email" type="varchar" size="100" unique="true"/>
+        <column name="password" type="varchar" size="255"/>
+        <column name="address_id" type="integer"/>
+        <foreign-key foreignTable="addresses">
+            <reference local="address_id" foreign="address_id"/>
+        </foreign-key>
+        <column name="registration_date" type="timestamp" default="CURRENT_TIMESTAMP"/>
+        <column name="image_url" type="varchar" size="255"/>
+    </table>
+
+    <!-- User Roles Table -->
+    <table name="user_roles">
+        <column name="user_id" type="integer"/>
+        <column name="role_id" type="integer"/>
+        <primary-key>
+            <column name="user_id"/>
+            <column name="role_id"/>
+        </primary-key>
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="user_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="roles">
+            <reference local="role_id" foreign="role_id"/>
+        </foreign-key>
+    </table>
+
+    <!-- Cuisine Types Table -->
+    <table name="cuisine_types">
+        <column name="cuisine_type_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="cuisine_name" type="varchar" size="100" unique="true" required="true"/>
+    </table>
+
+    <!-- Restaurant Table -->
+    <table name="restaurant">
+        <column name="restaurant_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" type="integer"/>
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="user_id"/>
+        </foreign-key>
+        <column name="status" type="enum">
+            <value>accepted</value>
+            <value>under investigation</value>
+            <value>under review</value>
+            <value>pending approval</value>
+            <value>verification in progress</value>
+            <value>awaiting review</value>
+            <value>under assessment</value>
+            <value>awaiting background check</value>
+        </column>
+        <column name="is_active" type="boolean" default="true"/>
+        <column name="message" type="varchar" size="255"/>
+        <column name="restaurant_name" type="varchar" size="200"/>
+        <column name="description" type="text"/>
+        <column name="order_requirement" type="decimal" size="10,2"/>
+        <column name="image_url" type="varchar" size="255"/>
+        <column name="created_at" type="timestamp" default="CURRENT_TIMESTAMP"/>
+        <column name="address_id" type="integer"/>
+        <foreign-key foreignTable="addresses">
+            <reference local="address_id" foreign="address_id"/>
+        </foreign-key>
+    </table>
+
+    <!-- Restaurant Cuisine Table -->
+    <table name="restaurant_cuisine">
+        <column name="restaurant_id" type="integer"/>
+        <column name="cuisine_type_id" type="integer"/>
+        <primary-key>
+            <column name="restaurant_id"/>
+            <column name="cuisine_type_id"/>
+        </primary-key>
+        <foreign-key foreignTable="restaurant">
+            <reference local="restaurant_id" foreign="restaurant_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="cuisine_types">
+            <reference local="cuisine_type_id" foreign="cuisine_type_id"/>
+        </foreign-key>
+    </table>
+
+    <!-- Working Time Table -->
+    <table name="working_time">
+        <column name="working_time_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="restaurant_id" type="integer"/>
+        <foreign-key foreignTable="restaurant">
+            <reference local="restaurant_id" foreign="restaurant_id"/>
+        </foreign-key>
+        <column name="day_of_week" type="enum">
+            <value>Monday</value>
+            <value>Tuesday</value>
+            <value>Wednesday</value>
+            <value>Thursday</value>
+            <value>Friday</value>
+            <value>Saturday</value>
+            <value>Sunday</value>
+        </column>
+        <column name="opening_time" type="time"/>
+        <column name="closing_time" type="time"/>
+    </table>
+
+    <!-- Bank Table -->
+    <table name="bank">
+        <column name="bank_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="restaurant_id" type="integer"/>
+        <foreign-key foreignTable="restaurant">
+            <reference local="restaurant_id" foreign="restaurant_id"/>
+        </foreign-key>
+        <column name="bank_name" type="varchar" size="100"/>
+        <column name="iban" type="varchar" size="34"/>
+        <column name="bic" type="varchar" size="11"/>
+        <column name="account_holder_name" type="varchar" size="100"/>
+    </table>
+
+    <!-- Restaurant Documents Table -->
+    <table name="restaurant_documents">
+        <column name="document_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="restaurant_id" type="integer"/>
+        <foreign-key foreignTable="restaurant">
+            <reference local="restaurant_id" foreign="restaurant_id"/>
+        </foreign-key>
+        <column name="document_type" type="enum">
+            <value>Health Certificate</value>
+            <value>Contract</value>
+            <value>Address registration</value>
+            <value>Other</value>
+        </column>
+        <column name="document_url" type="varchar" size="255"/>
+        <column name="uploaded_at" type="timestamp" default="CURRENT_TIMESTAMP"/>
+    </table>
+
+    <!-- Food Table -->
+    <table name="food">
+        <column name="food_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="food_name" type="varchar" size="100"/>
+        <column name="description" type="text"/>
+        <column name="cuisine_type_id" type="integer"/>
+        <foreign-key foreignTable="cuisine_types">
+            <reference local="cuisine_type_id" foreign="cuisine_type_id"/>
+        </foreign-key>
+        <column name="restaurant_id" type="integer"/>
+        <foreign-key foreignTable="restaurant">
+            <reference local="restaurant_id" foreign="restaurant_id"/>
+        </foreign-key>
+        <column name="standard_price" type="decimal" size="10,2"/>
+        <column name="price_small" type="decimal" size="10,2"/>
+        <column name="price_medium" type="decimal" size="10,2"/>
+        <column name="price_large" type="decimal" size="10,2"/>
+        <column name="quantity" type="integer"/>
+        <column name="initial_stock" type="integer"/>
+        <column name="image_url" type="varchar" size="255"/>
+        <column name="preparation_time" type="time"/>
+    </table>
+
+    <!-- Food Category Table -->
+    <table name="food_category">
+        <column name="food_category_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="category_name" type="varchar" size="100" unique="true"/>
+    </table>
+
+    <!-- Food Food Category Table -->
+    <table name="food_food_category">
+        <column name="food_id" type="integer"/>
+        <column name="food_category_id" type="integer"/>
+        <primary-key>
+            <column name="food_id"/>
+            <column name="food_category_id"/>
+        </primary-key>
+        <foreign-key foreignTable="food">
+            <reference local="food_id" foreign="food_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="food_category">
+            <reference local="food_category_id" foreign="food_category_id"/>
+        </foreign-key>
+    </table>
+
+    <!-- Offers Table -->
+    <table name="offers">
+        <column name="offer_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="offer_type" type="integer" required="true"/>
+        <column name="offer_value" type="decimal" size="10,2"/>
+        <column name="applicable_to" type="integer"/>
+        <column name="food_id" type="integer"/>
+        <foreign-key foreignTable="food">
+            <reference local="food_id" foreign="food_id"/>
+        </foreign-key>
+        <column name="min_order_value" type="decimal" size="10,2"/>
+        <column name="offer_start_date" type="date"/>
+        <column name="offer_end_date" type="date"/>
+    </table>
+
+    <!-- Menu Table -->
+    <table name="menu">
+        <column name="menu_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="restaurant_id" type="integer"/>
+        <foreign-key foreignTable="restaurant">
+            <reference local="restaurant_id" foreign="restaurant_id"/>
+        </foreign-key>
+        <column name="menu_name" type="varchar" size="255" required="true"/>
+        <column name="description" type="varchar" size="255"/>
+        <column name="created_at" type="timestamp" default="CURRENT_TIMESTAMP"/>
+    </table>
+
+    <!-- Menu Food Table -->
+    <table name="menu_food">
+        <column name="menu_id" type="integer"/>
+        <column name="food_id" type="integer"/>
+        <primary-key>
+            <column name="menu_id"/>
+            <column name="food_id"/>
+        </primary-key>
+        <foreign-key foreignTable="menu">
+            <reference local="menu_id" foreign="menu_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="food">
+            <reference local="food_id" foreign="food_id"/>
+        </foreign-key>
+    </table>
+
+    <!-- Basket Table -->
+    <table name="basket">
+        <column name="basket_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" type="integer"/>
+        <foreign-key foreignTable="users">
+            <reference local="user_id" foreign="user_id"/>
+        </foreign-key>
+        <column name="food_id" type="integer"/>
+        <foreign-key foreignTable="food">
+            <reference local="food_id" foreign="food_id"/>
+        </foreign-key>
+        <column name="restaurant_id" type="integer"/>
+        <foreign-key foreignTable="restaurant">
+            <reference local="restaurant_id" foreign="restaurant_id"/>
+        </foreign-key>
+    </table>
+
+    <!-- Payments Table -->
+    <table name="payments">
+        <column name="payment_id" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="basket_id" type="integer"/>
+        <foreign-key foreignTable="basket">
+            <reference local="basket_id" foreign="basket_id"/>
+        </foreign-key>
+        <column name="payment_date" type="timestamp" default="CURRENT_TIMESTAMP"/>
+        <column name="payment_status" type="enum">
+            <value>pending</value>
+            <value>completed</value>
+            <value>failed</value>
+            <value>refunded</value>
+        </column>
+        <column name="payment_method" type="enum">
+            <value>credit_card</value>
+            <value>paypal</value>
+            <value>bank_transfer</value>
+            <value>other</value>
+        </column>
+        <column name="total_amount" type="decimal" size="10,2"/>
+    </table>
+
+</database>

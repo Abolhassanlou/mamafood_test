@@ -1,0 +1,21 @@
+{
+    "name": "43664/mamafood29",
+    "description": "it is online marktplace for food",
+    "type": "project",
+    "require": {
+        "propel/propel": "2.0.x-dev"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "43664\\Mamafood29\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Abolhassanlou",
+            "email": "146092910+Abolhassanlou@users.noreply.github.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
